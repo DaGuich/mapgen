@@ -4,7 +4,7 @@
 
 ## Import Data
 
-## Generate 1 Tile
+## Generate one Tile
 
 ## Generate multiple tiles
 
@@ -12,11 +12,14 @@
 
 # Implementation Details
 
+## Format of imported data
+
 ## Formulas used
 
 ### Retrieve Tile
 
-For a latitude $\varphi$ and a longitude $\lambda$, both in radians, we can calculate the n_th tile in $x$ and $y$ direction for a given zoom level $z$.
+For a latitude $\varphi$ and a longitude $\lambda$, both in radians, we can 
+calculate the n_th tile in $x$ and $y$ direction for a given zoom level $z$.
 
 $$
 x = \lfloor {\varphi + \pi \over 2\pi} \cdot 2^{z} \rfloor

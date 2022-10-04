@@ -9,5 +9,6 @@ edition = "2021"
 path = "lib/main.rs"
 
 [dependencies]
+num = "0.4"
 png = "0.17.6"
 rgb = "0.8.33"

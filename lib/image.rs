@@ -1,3 +1,4 @@
+use num::integer::Roots;
 use std::fs::File;
 use std::io::BufWriter;
 use std::path::Path;
@@ -5,6 +6,8 @@ use std::path::Path;
 use crate::colors::RGB;
 use crate::colors::RGBA;
 use crate::vec2d::Vec2D;
+
+static SUBPIX_DIR: i16 = 10;
 
 pub struct Image {
     pixels: Vec<RGBA>,
@@ -55,7 +58,29 @@ impl Image {
         Ok(())
     }
 
+    pub fn draw_circle(&mut self, center: (u8, u8), radius: u8, color: &RGB) {
+        let center = Vec2D::new(center.0 as f32, center.1 as f32);
+        let steps = radius as i16 * SUBPIX_DIR;
+        let radius = radius as f32;
+
+        for x in -steps..(steps) {
+            for y in -steps..steps {
+                let dir = Vec2D::new(x as f32 / SUBPIX_DIR as f32, y as f32 / SUBPIX_DIR as f32);
+                let pix = center + dir;
+                let length = dir.len();
+                let is_in_x = (0f32..256f32).contains(&pix.x);
+                let is_in_y = (0f32..256f32).contains(&pix.y);
+                let is_in_radius = length <= radius;
+                if is_in_x && is_in_y && is_in_radius {
+                    self.set(pix.x.round() as u8, pix.y.round() as u8, color.into());
+                }
+            }
+        }
+    }
+
     pub fn draw_line(&mut self, start: (u8, u8), end: (u8, u8), color: &RGB, width: u8) {
+        self.draw_circle(start, width / 2, color);
+        self.draw_circle(end, width / 2, color);
         let start = Vec2D::new(start.0 as f32, start.1 as f32);
         let end = Vec2D::new(end.0 as f32, end.1 as f32);
         let vector = end - start;
@@ -75,8 +100,8 @@ impl Image {
             orth * ((width as f32 / 2f32) / orth.len())
         };
         let length = vector.len();
-        let steps = (length as u32) * 10;
-        let width_steps = width as u32 * 10;
+        let steps = (length as u32) * SUBPIX_DIR as u32;
+        let width_steps = width as u32 * SUBPIX_DIR as u32;
         for step in 0..steps {
             let step = step as f32 / steps as f32;
             let pix = start + vector * step;
